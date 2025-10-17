@@ -1,7 +1,9 @@
 import { create } from 'zustand'
-import { UserData } from './types'
+import { UserData, UserId } from './types'
 import api from './lib/axios'
-import { userDataSchema, userLoginSchema } from './schema-zod'
+import { userDataSchema, userIdSchema } from './schema-zod'
+import { toast } from 'react-toastify'
+import { addUser } from '@/actions/addUserAction'
 
 const initialValues = {
     token: '',
@@ -15,10 +17,12 @@ const initialValues = {
 interface Store {
     token: string
     userData: UserData,
-    
-    setToken: (token:string) => void,
+
+    setToken: (token: string) => void,
     getUserData: () => void,
-    logOut: () => void
+    logOut: () => void,
+    sendFriendRequest: (id: UserId) => void,
+    getContacts: () => {}
 }
 
 export const useStore = create<Store>((set, get) => ({
@@ -29,15 +33,14 @@ export const useStore = create<Store>((set, get) => ({
         set(() => ({
             token: token
         }))
-        localStorage.setItem('token', token)
     },
     getUserData: async () => {
-        const tokenStorage = localStorage.getItem('token')
+        const token = get().token
         try {
             const url = '/dashboard/api'
-            const { data } = await api.get(url, {headers: {Authorization: `Bearer ${tokenStorage}`}})
+            const { data } = await api.get(url, { headers: { Authorization: `Bearer ${token}` } })
             const result = userDataSchema.safeParse(data)
-            if(result.success) {
+            if (result.success) {
                 set(() => ({
                     userData: {
                         id: result.data.id,
@@ -57,5 +60,31 @@ export const useStore = create<Store>((set, get) => ({
             token: initialValues.token,
             userData: initialValues.userData
         }))
+    },
+
+    sendFriendRequest: async (id) => {
+        const result = userIdSchema.safeParse(id)
+        if (!result.success) {
+            toast.error('There was an error sending the request, please contact support')
+        }
+
+        const data = { userId: id, currentUserid: get().userData.id }
+        try {
+            const response = await addUser(data)
+            if (response?.errors) {
+                toast.error(response.errors)
+                return
+            }
+
+            toast.success('Friend Request sent successfully')
+        } catch (error) {
+            console.log('There was an error trying to send friend request: ' + error)
+        }
+    },
+
+    getContacts: async () => {
+        const url = `/contact-list/api?query=${get().userData.id}`
+        const response = await api.get(url, { headers: { Authorization: `Bearer ${get().token}`} } )
+        console.log(response)
     }
 }))

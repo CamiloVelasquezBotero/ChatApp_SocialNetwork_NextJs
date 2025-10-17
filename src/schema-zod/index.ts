@@ -30,11 +30,9 @@ export const userDataSchema = userRegisterSchema.pick({
 
 export const usersDataSchema = z.array(userDataSchema)
 
-export const userIdSchema = z.object({
-  id: z.int()
-})
+export const userIdSchema = z.number()
 
 export const dataSendRequest = z.object({
-  userId: z.int(),
-  userDataId: z.int(),
+  userId: z.number(),
+  currentUserid: z.number(),
 })

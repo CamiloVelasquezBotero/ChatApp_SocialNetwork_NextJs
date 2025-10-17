@@ -1,7 +1,6 @@
 'use server'
 import { prisma } from "@/src/prisma-connection/prisma";
 import { dataSendRequest } from "@/src/schema-zod";
-import { useStore } from "@/src/store";
 
 export async function addUser(data:unknown) {
     const result = dataSendRequest.safeParse(data)
@@ -17,7 +16,7 @@ export async function addUser(data:unknown) {
         if(!userExists) {
             return {errors: 'There was an error adding the user, please contact support'}
         }
-        const alreadyExists = userExists.solicitudes.includes(result.data.userDataId)
+        const alreadyExists = userExists.solicitudes.includes(result.data.currentUserid)
         if(alreadyExists) {
             return {errors: 'The friend request has already been sent'}
         }
@@ -29,7 +28,7 @@ export async function addUser(data:unknown) {
             },
             data: {
                 solicitudes: {
-                    push: result.data.userDataId
+                    push: result.data.currentUserid
                 }
             }
         })
