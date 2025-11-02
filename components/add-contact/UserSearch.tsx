@@ -2,21 +2,29 @@
 import { useEffect, useState } from "react";
 import FoundUsers from "./FoundUsers";
 import api from "@/src/lib/axios";
-import { UserData } from "@/src/types";
-import { usersDataSchema } from "@/src/schema-zod";
+import { UserData, UsersFoundInSearch } from "@/src/types";
+import { usersFoundInSearch } from "@/src/schema-zod";
+import Spinner from "../ui/Spinner";
+import { toast } from "react-toastify";
 
 export default function UserSearch() {
+    const [isLoading, setIsLoading] = useState(false)
     const [query, setQuery] = useState<string>('')
-    const [users, setUsers] = useState<UserData[]>([])
+    const [users, setUsers] = useState<UsersFoundInSearch>([])
 
     useEffect(() => {
         const fetchUsers = async () => {
             try {
+                setIsLoading(true) // Activamos spinner
                 const {data} = await api.get(`/add-contact/api?query=${query}`)
-                const result = usersDataSchema.safeParse(data)
-                if(result.success) {
-                    setUsers(result.data)
+                console.log(data)
+                const result = usersFoundInSearch.safeParse(data)
+                if(!result.success) {
+                  return toast.error("There was an error in the search")
                 }
+                // Mostramos los usuarios
+                setUsers(result.data)
+                setIsLoading(false) // Spinner off
             } catch (error) {
                 console.log('There was an error fetching the users')
             }
@@ -51,9 +59,13 @@ export default function UserSearch() {
         </form>
 
           <div className="flex justify-center mt-5 w-auto">
-                <FoundUsers
-                    users={users}
-                />
+            {isLoading ? (
+              <Spinner />
+            ): (
+              <FoundUsers
+                  users={users}
+              />
+            )}
           </div>
       </div>
   )

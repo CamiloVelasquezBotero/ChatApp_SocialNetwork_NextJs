@@ -8,7 +8,7 @@ export default function Login() {
         Recupera tu {""}
         <span className="text-indigo-800 hover:text-indigo-700">Cuenta</span> {""}
         para empezar a {""}
-        <span className="text-indigo-800 hover:text-indigo-700">Chatear con tus amigos</span>
+        <span className="text-indigo-800 hover:text-indigo-700">Chatear con tus friends</span>
       </p>
 
       <div className='bg-white rounded-lg shadow-md hover:shadow-xl transition-all p-10 mr-10'>

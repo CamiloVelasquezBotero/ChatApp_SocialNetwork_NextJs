@@ -8,7 +8,7 @@ import { createUser } from '@/actions/createUserAction'
 export default function NewUserForm({children}:{children: React.ReactNode}) {
    const router = useRouter()
 
-   const handleSubmit = async (formData:FormData) => {
+   const handleCreateUser = async (formData:FormData) => {
       
       if(formData.get('password') !== formData.get('confirmPas')) {
          toast.error('The passwords are incorrect')
@@ -53,7 +53,7 @@ export default function NewUserForm({children}:{children: React.ReactNode}) {
          <div className='bg-white rounded-lg shadow-md hover:shadow-xl transition-all p-10'>
             <p className="font-black text-5xl text-center text-indigo-700 text-shadow-lg">Create Your Account</p>
             <form
-               action={handleSubmit}
+               action={handleCreateUser}
                className='flex flex-col items-center mt-10 gap-5 w-full'
             >
               {children}

@@ -65,7 +65,7 @@ export default function UserForm({condition}:UserFormProps) {
                     value={values.password}
                 />
             </div>
-            {condition === 'sign up' &&(
+            {condition === 'sign up' && (
                 <div className='flex gap-5 items-center w-full justify-center'>
                     <label htmlFor="confirmPas" className='font-black text-4xl ml-7 text-shadow-lg'>Confirm</label>
                     <input

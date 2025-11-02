@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,10 +8,12 @@ datasource db {
 }
 
 model User {
-  id            Int     @id   @default(autoincrement())
-  name          String
-  email         String  @unique
-  password      String
-  amigos        Int[] 
-  solicitudes   Int[]
+  id                Int     @id @default(autoincrement())
+  name              String  
+  email             String  @unique
+  password          String  
+  friends           User[]  @relation("Friends")
+  friendOf          User[]  @relation("Friends") // Pivote
+  requestsSent      User[]  @relation("Requests")     
+  requestsReceived  User[]  @relation("Requests")
 }
