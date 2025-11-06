@@ -1,17 +1,25 @@
 'use client'
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { LightBulbIcon, PlusCircleIcon } from '@heroicons/react/16/solid'
-import Link from "next/link";
+import { PlusCircleIcon } from '@heroicons/react/16/solid';
 import OnlineUsers from "@/components/OnlineUsers";
 import { useStore } from "@/src/store";
+import io from "socket.io-client";
 
 export default function DashBoard() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const router = useRouter()
 
   const userData = useStore((state) => state.userData)
+  const userId = useStore((state) => state.userData.id)
+
+  // ---------- Websockets --------- 
+ /*  useEffect(() => {
+    if(userId) {
+      // connection to websocket
+      const socket = io(process.env.BACKEND_SOCKETS!)
+    } 
+  }, [userId]) */
 
   if(userData.email) return (
     <>

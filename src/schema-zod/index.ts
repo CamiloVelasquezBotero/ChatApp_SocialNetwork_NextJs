@@ -38,7 +38,7 @@ export const userDataSchema = userRegisterSchema.pick({
 })
 
 export const usersFoundInSearch = z.array(userDataSchema.pick({ id:true, email:true, name:true }))
-export const userFoundInSearch = userDataSchema.pick({ id:true, email:true, name:true })
+export const UserInfo = userDataSchema.pick({ id:true, email:true, name:true })
 
 export const userIdSchema = z.number()
 

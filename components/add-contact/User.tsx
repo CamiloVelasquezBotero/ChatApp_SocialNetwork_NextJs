@@ -1,9 +1,9 @@
 import { UserPlusIcon, ChatBubbleLeftRightIcon, UserIcon } from '@heroicons/react/16/solid'
-import { UserFoundInSearch } from "@/src/types"
+import { UserInfo } from "@/src/types"
 import { useStore } from '@/src/store'
 
 type UserProps = {
-    user: UserFoundInSearch
+    user: UserInfo
 }
 
 export default function User({user}:UserProps) {

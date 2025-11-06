@@ -1,20 +1,26 @@
 'use client'
 import React, { useEffect } from 'react'
 import Link from 'next/link'
-import UserInfo from '@/components/contact-list/UserInfo'
 import { CursorArrowRaysIcon } from '@heroicons/react/16/solid'
 import { useStore } from '@/src/store'
+import FriendInfo from '@/components/contact-list/FriendInfo'
 
 export default function contactList() {
   const friends = useStore((state) => state.userData.friends)
   const token = useStore((state) => state.token)
+  console.log(friends)
 
   return (
     <div className='flex justify-center w-full p-5'>
       <div className='bg-white w-300 h-130 shadow-2xl rounded-2xl p-10'>
-        <ul className='flex w-full h-full items-center justify-center'>
-          {friends.length ? (
-            <p>user</p>
+        <ul className='flex w-full h-full justify-center items-start'>
+          {friends && friends.length ? (
+            friends.map(friend => (
+              <FriendInfo 
+                key={friend.id}
+                user={friend}
+              />
+            ))
           ) : (
             <p className="flex font-bold text-2xl text-slate-600 gap-2">
               Aun no tienes friends agregados,

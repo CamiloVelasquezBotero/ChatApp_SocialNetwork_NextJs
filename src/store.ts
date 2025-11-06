@@ -4,6 +4,7 @@ import api from './lib/axios';
 import { acceptRequestSchema, rejectRequestSchema, removeFriendSchema, userDataSchema, userIdSchema } from './schema-zod';
 import { toast } from 'react-toastify';
 import { sendFriendRequestAction } from '@/actions/sendFriendRequestAction';
+import socket from './lib/socket';
 
 const initialValues = {
     token: '',
@@ -71,12 +72,13 @@ export const useStore = create<Store>((set, get) => ({
     },
 
     sendFriendRequest: async (id) => {
+        const currentUserid = get().userData.id
         const result = userIdSchema.safeParse(id)
         if (!result.success) {
             toast.error('There was an error sending the request, please contact support')
         }
 
-        const data = { userId: id, currentUserid: get().userData.id }
+        const data = { userId: id, currentUserid }
         try {
             const response = await sendFriendRequestAction(data)
             if (response?.errors) {
@@ -84,6 +86,8 @@ export const useStore = create<Store>((set, get) => ({
                 return false
             }
             toast.success('Friend Request sent successfully')
+            socket.emit('friend-request-sent', {idReceiver: id})
+            
             return true
         } catch (error) {
             console.log('There was an error trying to send friend request: ' + error)
@@ -96,7 +100,6 @@ export const useStore = create<Store>((set, get) => ({
         const url = '/dashboard/api'
         try {
             const { data } = await api.patch(url, dataRequest, {headers: {Authorization: `Bearer ${token}`}})
-            console.log(data)
             if(dataRequest.action === 'accept') {
                 // ACCEPT
                 const result = acceptRequestSchema.safeParse(data)

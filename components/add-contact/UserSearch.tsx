@@ -17,7 +17,6 @@ export default function UserSearch() {
             try {
                 setIsLoading(true) // Activamos spinner
                 const {data} = await api.get(`/add-contact/api?query=${query}`)
-                console.log(data)
                 const result = usersFoundInSearch.safeParse(data)
                 if(!result.success) {
                   return toast.error("There was an error in the search")

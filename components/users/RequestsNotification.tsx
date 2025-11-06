@@ -18,8 +18,8 @@ export default function RequestsNotification({request}:RequestsNotificationProps
   }
 
   return (
-    <li>
-        <div className='flex mb-3 items-center gap-2 p-2 hover:bg-slate-600 transition last:border-t last:border-gray-400'>
+    <li className='shadow-2xl p-2'>
+        <div className='mb-2 rounded-xl flex items-center gap-2 p-2 hover:bg-slate-600 transition last:border-t last:border-gray-400'>
           <BellIcon className='w-5 text-lime-400' />
           <div>
             <p className='font-black text-white text-sm'>{request.name} Te ha enviado una solicitud de amistad</p>
@@ -28,13 +28,13 @@ export default function RequestsNotification({request}:RequestsNotificationProps
         </div>
         <div className='flex gap-5'>
           <button 
-            className='p-2 bg-sky-700 hover:bg-sky-800 flex gap-1 items-center cursor-pointer rounded-md text-white font-black'
+            className='shadow-xl p-1 bg-sky-700 hover:bg-sky-800 flex gap-1 items-center cursor-pointer rounded-md text-white font-black'
             onClick={() => handleRequest('accept')}
           >
              Agregar <UserPlusIcon className='w-6'/>
           </button>
           <button 
-            className='p-2 bg-red-700 hover:bg-red-800 flex gap-1 items-center cursor-pointer rounded-md text-white font-black'
+            className='shadow-xl p-1 bg-red-700 hover:bg-red-800 flex gap-1 items-center cursor-pointer rounded-md text-white font-black'
             onClick={() => handleRequest('decline')}
           >
              Rechazar <MinusCircleIcon className='w-6'/>
