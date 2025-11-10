@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { AcceptRequest, UserData } from './types';
+import { AcceptRequest, FriendOnline, FriendsOnline, FriendsOnlineId, UserData } from './types';
 import api from './lib/axios';
 import { acceptRequestSchema, rejectRequestSchema, removeFriendSchema, userDataSchema, userIdSchema } from './schema-zod';
 import { toast } from 'react-toastify';
@@ -15,24 +15,30 @@ const initialValues = {
         friends: [],
         requestsSent: [],
         requestsReceived: []
-    }
+    },
+    friendsOnline: []
 }
 
 interface Store {
-    token: string
-    userData: UserData
+    token: string,
+    userData: UserData,
+    friendsOnline: FriendsOnline,
 
     setToken: (token:string) => void,
     getUserData: () => void,
     logOut: () => void,
-    sendFriendRequest: (id:UserData['id']) => Promise<boolean>,
+    sendFriendRequest: (id:UserData['id']) => void,
     acceptRequest: (dataRequest:AcceptRequest) => void,
-    removeFriend: (idSender:UserData['id']) => void
+    removeFriend: (friendId:UserData['id']) => void,
+    updateOnlineFriends: (friendsOnline:FriendsOnlineId) => void,
+    updateUserDisconnected: (friendId:FriendOnline['id']) => void,
+    updateUserConnected: (friendId:FriendOnline['id']) => void,
 }
 
 export const useStore = create<Store>((set, get) => ({
     token: initialValues.token,
     userData: initialValues.userData,
+    friendsOnline: initialValues.friendsOnline,
 
     setToken: (token) => {
         set(() => ({
@@ -87,11 +93,8 @@ export const useStore = create<Store>((set, get) => ({
             }
             toast.success('Friend Request sent successfully')
             socket.emit('friend-request-sent', {idReceiver: id})
-            
-            return true
         } catch (error) {
             console.log('There was an error trying to send friend request: ' + error)
-            return false
         }
     },
 
@@ -141,10 +144,10 @@ export const useStore = create<Store>((set, get) => ({
 
     removeFriend: async (friendId) => {
         const token = get().token
-        const url = '/dashboard/api'
+        const url = `/dashboard/api?friendId=${friendId}`
+
         try {
-            const { data } = await api.delete(url, {headers: {Authorization: `Bearer ${token}`, data: friendId}})
-            console.log(data)
+            const { data } = await api.delete(url, {headers: {Authorization: `Bearer ${token}`}})
             const result = removeFriendSchema.safeParse(data)
             if(!result.success) {
                 toast.error('There was an error')
@@ -158,9 +161,43 @@ export const useStore = create<Store>((set, get) => ({
                     friends: result.data?.user.friends
                 }
             }))
+            toast.success(result.data.message)
         } catch (error) {
             console.log(`There was an error removing the friend: ${error}`)
             toast.error('There was an error')
+        }
+    },
+
+    updateOnlineFriends: (friendsOnline) => {
+        const friends = get().userData.friends
+        const dataFriendsOnline = friends.filter(friend => friendsOnline.includes(friend.id))
+
+        set(() => ({
+            friendsOnline: dataFriendsOnline
+        }))
+    },
+
+    updateUserDisconnected: (friendId) => {
+        const friendsOnline = get().friendsOnline
+        const friendsOnlineUpdated = friendsOnline.filter(friend => friend.id !== friendId)
+        set(() => ({
+            friendsOnline: friendsOnlineUpdated
+        }))
+    },
+
+    updateUserConnected: (friendId) => {
+        const friends = get().userData.friends
+        const friendsOnline = get().friendsOnline
+        const friendconnected = friends.find(friend => friend.id === friendId)
+        
+        if(friendconnected) {
+            const existsFriendConnected = friendsOnline.find(friend => friend.id === friendconnected.id)
+            if(!existsFriendConnected) {
+                const friendsOnlineUpdated = [...friendsOnline, friendconnected]
+                set(() => ({
+                    friendsOnline: friendsOnlineUpdated
+                }))
+            }
         }
     }
 }))

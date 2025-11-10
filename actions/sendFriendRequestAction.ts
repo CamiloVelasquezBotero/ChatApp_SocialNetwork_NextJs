@@ -5,22 +5,26 @@ import { dataSendRequest } from "@/src/schema-zod";
 export async function sendFriendRequestAction(data:unknown) {
     const result = dataSendRequest.safeParse(data)
     if(!result.success) {
-        return {errors: 'There was an error adding the user, please contact support'}
+        return {errors: 'Hubo un error enviando la solicitud, por favor contacta a soporte'}
     }
 
     try {
         const userExists = await prisma.user.findFirst({
             where: { id: result.data.userId },
-            select: { id: true, requestsReceived: true }
+            select: { id:true, requestsReceived:true, friends:true },
         })
         if(!userExists) {
-            return {errors: 'There was an error adding the user, please contact support'}
+            return {errors: 'Hubo un error enviando la solicitud, por favor contacta a soporte'}
         }
-        const alreadyExists = userExists.requestsReceived.some(request => request.id == result.data.currentUserid)
+        const alreadyFriends = userExists.friends.some(friend => friend.id === result.data.currentUserid)
+        if(alreadyFriends) {
+            return {errors: 'Este usuario ya esta en tu lista de amigos'}
+        }
+        const alreadyExists = userExists.requestsReceived.some(request => request.id === result.data.currentUserid)
         if(alreadyExists) {
-            return {errors: 'The friend request has already been sent', exists: true}
+            return {errors: 'Solicitud de amistad enviada'}
         }
-
+        
         // Adding user
         await prisma.user.update({
             where: {

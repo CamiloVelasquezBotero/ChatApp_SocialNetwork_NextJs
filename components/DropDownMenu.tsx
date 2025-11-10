@@ -18,7 +18,7 @@ export default function DropDownMenu() {
   return (
     <div className="">
       <Menu>
-        <MenuButton className="inline-flex items-center gap-2 rounded-md bg-gray-800 px-3 py-2 text-sm/6 font-semibold text-white shadow-xl border-slate-700 shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-hover:bg-gray-700 data-open:bg-gray-700 cursor-pointer transition-all">
+        <MenuButton className="inline-flex items-center gap-2 rounded-md bg-gray-800 px-3 py-2 text-sm/6 font-semibold text-white shadow-lg border-slate-700 shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-hover:bg-gray-700 data-open:bg-gray-700 cursor-pointer transition-all">
           <Image
             src={'/profile.jpg'}
             alt="Profile Picture"
@@ -31,7 +31,7 @@ export default function DropDownMenu() {
         <MenuItems
           transition
           anchor="bottom end"
-          className="w-52 origin-top-right rounded-xl bg-slate-700 p-1 text-sm/6 text-white transition duration-100 ease-out [--anchor-gap:--spacing(1)] focus:outline-none data-closed:scale-95 data-closed:opacity-0"
+          className="w-40 pb-4 origin-top-right rounded-xl bg-slate-700 p-1 text-sm/6 text-white transition duration-100 ease-out [--anchor-gap:--spacing(1)] focus:outline-none data-closed:scale-95 data-closed:opacity-0"
         >
           <div className="my-1 h-px bg-white/5" />
           <MenuItem>

@@ -1,6 +1,7 @@
 import { UserPlusIcon, ChatBubbleLeftRightIcon, UserIcon } from '@heroicons/react/16/solid'
 import { UserInfo } from "@/src/types"
 import { useStore } from '@/src/store'
+import { useMemo } from 'react'
 
 type UserProps = {
     user: UserInfo
@@ -9,9 +10,14 @@ type UserProps = {
 export default function User({user}:UserProps) {
   const sendFriendRequest = useStore((state) => state.sendFriendRequest)
   const userData = useStore((state) => state.userData)
-  let response
+  const friendsUser = useStore((state) => state.userData.friends)
+  // Check if already friends
+  const alreadyFriends = useMemo(() => friendsUser.some(friend => friend.id === user.id), [friendsUser])
+
   const handleSubmit = () => {
-    response = sendFriendRequest(user.id)
+    if(!alreadyFriends) {
+      sendFriendRequest(user.id)
+    }
   }
 
   return (
@@ -25,14 +31,14 @@ export default function User({user}:UserProps) {
               className='cursor-pointer'
               onClick={handleSubmit}
             >
-              {response ? (
-                <ChatBubbleLeftRightIcon className="text-white rounded-xl bg-blue-500 p-2 w-9 hover:bg-blue-400 transition"/>
+              {alreadyFriends ? (
+                <ChatBubbleLeftRightIcon className="shadow-xl text-white rounded-xl bg-blue-500 p-2 w-9 hover:bg-blue-400 transition"/>
               ) : (
-                <UserPlusIcon className="text-white rounded-xl bg-green-500 p-2 w-9 hover:bg-green-400 transition"/>
+                <UserPlusIcon className="shadow-xl text-white rounded-xl bg-green-500 p-2 w-9 hover:bg-green-400 transition"/>
               )}
             </button>
           ) : (
-            <UserIcon className="text-white rounded-xl bg-blue-500 p-2 w-9 hover:bg-blue-400 transition"/>
+            <UserIcon className="shadow-xl text-white rounded-xl bg-blue-700 p-2 w-9 hover:bg-blue-600 transition"/>
           )}
     </li>
   )

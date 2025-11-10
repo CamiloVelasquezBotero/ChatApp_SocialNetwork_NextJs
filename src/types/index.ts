@@ -10,3 +10,11 @@ export type UsersFoundInSearch = z.infer<typeof usersFoundInSearch>
 export type UserInfo = z.infer<typeof UserInfo>
 
 export type AcceptRequest = {idSender: number, action: string,}
+
+export type FriendsOnlineId = number[]
+export type FriendOnline = {
+    id: number,
+    name: string,
+    email: string,
+}
+export type FriendsOnline = FriendOnline[]

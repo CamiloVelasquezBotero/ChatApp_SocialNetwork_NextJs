@@ -8,17 +8,16 @@ import FriendInfo from '@/components/contact-list/FriendInfo'
 export default function contactList() {
   const friends = useStore((state) => state.userData.friends)
   const token = useStore((state) => state.token)
-  console.log(friends)
 
   return (
     <div className='flex justify-center w-full p-5'>
       <div className='bg-white w-300 h-130 shadow-2xl rounded-2xl p-10'>
-        <ul className='flex w-full h-full justify-center items-start'>
+        <ul className='flex w-full h-full items-start justify-between px-40 gap-5'>
           {friends && friends.length ? (
             friends.map(friend => (
               <FriendInfo 
                 key={friend.id}
-                user={friend}
+                friend={friend}
               />
             ))
           ) : (

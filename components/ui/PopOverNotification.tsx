@@ -32,7 +32,7 @@ export default function PopOverNotification() {
    return (
       <div className="">
          <Menu>
-            <MenuButton className="inline-flex items-center gap-2 rounded-m px-3 py-2 text-sm/6 font-semibold text-white shadow-xl rounded-2xl border-slate-700 shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-hover:bg-gray-700 data-open:bg-gray-700 cursor-pointer transition-all">
+            <MenuButton className="inline-flex items-center gap-2 rounded-m px-3 py-2 text-sm/6 font-semibold text-white shadow-lg rounded-2xl border-slate-700 shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-hover:bg-gray-700 data-open:bg-gray-700 cursor-pointer transition-all">
                {existsNotifications ? (
                   <BellAlertIcon className='text-lime-300 w-7 cursor-pointer hover:scale-120 transition-all duration-200' />
                ) : (

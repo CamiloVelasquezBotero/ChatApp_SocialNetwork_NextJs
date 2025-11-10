@@ -1,3 +1,4 @@
+'use server'
 import { prisma } from '@/src/prisma-connection/prisma';
 import jwt from 'jsonwebtoken'
 
@@ -54,7 +55,6 @@ export async function PATCH(req: Request) {
         const body = await req.json();
         const idSender = +body.idSender;
         const action = body.action;
-        console.log(body)
 
         if (!idSender) {
             return Response.json({ error: 'idSender is required' }, { status: 400 });
@@ -121,37 +121,49 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-    const body = await req.json()
+    const { searchParams } = new URL(req.url)
+    const queryFriendId = Number(searchParams.get('friendId'))
+    if(!queryFriendId) return Response.json({error: '¡FriendId no encontrada!'}, {status:400})
     const bearer = req.headers.get('authorization')
-
+    
     if(!bearer || !bearer.startsWith('Bearer')) {
         return Response.json({error: 'Invalid Token'}, {status: 401})
     }
 
-    const token = bearer.split(' ')[1]
+   const token = bearer.split(' ')[1]
     try {
         const decoded = jwt.verify(token, process.env.SECRET_KEY!)
         if(typeof decoded !== 'object' || !decoded.id) {
             return Response.json({error: 'Invalid Token'}, {status: 401})
         }
+        const userId = Number(decoded.id)
 
-        const userId = +decoded.id
-        const friendId = +body.friendId 
-        if(!friendId) {
-            return Response.json({error: 'friendId is required'}, {status: 400})
+        // Verificar existencia
+        const existsFriend = await prisma.user.findUnique({
+            where: { id: userId},
+            select: { 
+                friends: { 
+                    where: { id: queryFriendId },
+                    select: { id: true } // Solo el id por seguridad
+                }
+            }
+        })
+        if(!existsFriend || existsFriend.friends.length === 0) {
+            return Response.json({error: 'Amigo no encontrado'}, {status: 401})
         }
-
+        
+        // Si pasa atualizamos amigos...
         const user = await prisma.user.update({
             where: {id: userId},
             data: {
-                friends: {disconnect: {id: friendId}}
+                friends: {disconnect: {id: queryFriendId}}
             },
             select: {
                 friends:true
             }
         })
         await prisma.user.update({
-            where: {id: friendId},
+            where: {id: queryFriendId},
             data:{
                 friends: {disconnect: {id: userId}}
             }
@@ -161,4 +173,4 @@ export async function DELETE(req: Request) {
     } catch (error) {
         console.log(`There was an error removing the Request: ${error}`)
     }
-}
+} 

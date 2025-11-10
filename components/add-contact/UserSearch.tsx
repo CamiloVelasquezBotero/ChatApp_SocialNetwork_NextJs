@@ -19,7 +19,7 @@ export default function UserSearch() {
                 const {data} = await api.get(`/add-contact/api?query=${query}`)
                 const result = usersFoundInSearch.safeParse(data)
                 if(!result.success) {
-                  return toast.error("There was an error in the search")
+                  return toast.error("Hubo un error en la busqueda")
                 }
                 // Mostramos los usuarios
                 setUsers(result.data)
