@@ -21,7 +21,7 @@ export default function Header() {
   const router = useRouter()
   const friendsId = friends.map(friend => friend.id)
   
-  // ----------------- Websockets --------- 
+  // ------------------------//---------- Websockets ---------------//------------
   useEffect(() => {
     // Verificamos si ya cargo el server de Next
     if (typeof window !== "undefined") {

@@ -9,16 +9,15 @@ import { useRouter } from "next/navigation";
 
 export default function LoginUserForm({ children }: { children: React.ReactNode }) {
    const setToken = useStore((state) => state.setToken)
-   const token = useStore((state) => state.token)
    const router = useRouter()
 
    useEffect(() => {
       const existsToken = localStorage.getItem('token')
       if(existsToken) {
-         router.push('/dashboard')
          setToken(existsToken)
+         router.push('/dashboard')
       }
-   }, [token])
+   }, [])
 
    const handleSubmit = async (formData: FormData) => {
       const data = {
@@ -43,7 +42,7 @@ export default function LoginUserForm({ children }: { children: React.ReactNode 
       }
       // get the user and log in
       if (response?.token) {
-         localStorage.setItem('token', token)
+         localStorage.setItem('token', response.token)
          setToken(response.token)
          router.push('/dashboard')
       }

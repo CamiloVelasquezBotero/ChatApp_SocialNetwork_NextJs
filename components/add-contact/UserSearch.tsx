@@ -11,6 +11,7 @@ export default function UserSearch() {
     const [isLoading, setIsLoading] = useState(false)
     const [query, setQuery] = useState<string>('')
     const [users, setUsers] = useState<UsersFoundInSearch>([])
+    console.log(users)
 
     useEffect(() => {
         const fetchUsers = async () => {

@@ -11,9 +11,16 @@ import {
 } from '@heroicons/react/16/solid'
 import Image from 'next/image'
 import { useStore } from '@/src/store'
+import { useRouter } from 'next/navigation'
 
 export default function DropDownMenu() {
   const logOut = useStore((state) => state.logOut)
+  const router = useRouter()
+
+  const handleLogOut = () => {
+    logOut()
+    router.push('/')
+  }
 
   return (
     <div className="">
@@ -51,7 +58,7 @@ export default function DropDownMenu() {
           <MenuItem>
             <button 
               className="transition group flex w-full items-center gap-2 rounded-lg px-3 py-1.5 data-focus:bg-white/10 cursor-pointer"
-              onClick={logOut}
+              onClick={handleLogOut}
             >
               <ArrowLeftEndOnRectangleIcon className="size-6 fill-white/30" />
               Log Out
