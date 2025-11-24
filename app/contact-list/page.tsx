@@ -12,7 +12,7 @@ export default function contactList() {
   return (
     <div className='flex justify-center w-full p-5'>
       <div className='bg-white w-300 h-130 shadow-2xl rounded-2xl p-10'>
-        <ul className='flex w-full h-full items-start justify-between px-40 gap-5'>
+        <ul className='grid grid-cols-2 gap-5 px-30 overflow-y-auto'>
           {friends && friends.length ? (
             friends.map(friend => (
               <FriendInfo 

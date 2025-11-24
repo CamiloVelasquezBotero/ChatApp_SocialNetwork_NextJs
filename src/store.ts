@@ -33,6 +33,8 @@ interface Store {
     updateOnlineFriends: (friendsOnline:FriendsOnlineId) => void,
     updateUserDisconnected: (friendId:FriendOnline['id']) => void,
     updateUserConnected: (friendId:FriendOnline['id']) => void,
+    updateFriendOnline: (dataFriend:FriendOnline) => void,
+    updateFriendRemovedNotification: (friendId:FriendOnline['id']) => void,
 }
 
 export const useStore = create<Store>((set, get) => ({
@@ -120,6 +122,26 @@ export const useStore = create<Store>((set, get) => ({
                     }
                 }))
                 toast.success(result.data.message)
+                // Enviamos socket para actualizar al que envio la solicitud
+                socket.emit('friend-request-accepted', {
+                    userData: {
+                        id: get().userData.id,
+                        name: get().userData.name,
+                        email: get().userData.email,
+                    }, 
+                    idSender: dataRequest.idSender, 
+                    action: dataRequest.action
+                }, (isConnected:boolean) => { // Si recibimos true es por que esta conectado, entonces actualizamos los friendsOnline
+                    if(isConnected) {
+                        // Actualizamos friendsOnline
+                        const newFriendAdded = result.data.user.friends.find(friend => friend.id === dataRequest.idSender)
+                        if(newFriendAdded) {
+                            set((state) => ({
+                                friendsOnline: [...state.friendsOnline, newFriendAdded]
+                            }))    
+                        }
+                    }
+                })
             } else {
                 // DECLINE
                 const result = rejectRequestSchema.safeParse(data)
@@ -155,13 +177,18 @@ export const useStore = create<Store>((set, get) => ({
             }
 
             // Actualizar Store
+            const friendsOnlineUpdated = get().friendsOnline.filter(friend => friend.id != friendId)
             set((state) => ({
                 userData: {
                     ...state.userData,
                     friends: result.data?.user.friends
-                }
+                },
+                friendsOnline: friendsOnlineUpdated
             }))
             toast.success(result.data.message)
+
+            // Socket de eliminacion para actualizacion de estado en el otro usuario
+            socket.emit('friend-removed', {userId: get().userData.id, userRemovedId: friendId})
         } catch (error) {
             console.log(`There was an error removing the friend: ${error}`)
             toast.error('There was an error')
@@ -185,19 +212,50 @@ export const useStore = create<Store>((set, get) => ({
         }))
     },
 
-    updateUserConnected: (friendId) => {
+    updateUserConnected: async (friendId) => {
         const friends = get().userData.friends
         const friendsOnline = get().friendsOnline
-        const friendconnected = friends.find(friend => friend.id === friendId)
+        const existsFriend = friends.find(friend => friend.id === friendId)
         
-        if(friendconnected) {
-            const existsFriendConnected = friendsOnline.find(friend => friend.id === friendconnected.id)
+        if(existsFriend) {
+            const existsFriendConnected = friendsOnline.find(friend => friend.id === existsFriend.id)
             if(!existsFriendConnected) {
-                const friendsOnlineUpdated = [...friendsOnline, friendconnected]
+                const friendsOnlineUpdated = [...friendsOnline, existsFriend]
                 set(() => ({
                     friendsOnline: friendsOnlineUpdated
                 }))
             }
         }
+    },
+
+    updateFriendOnline: (dataFriend) => {
+        const alreadyFriends = get().userData.friends.find(friend => friend.id === dataFriend.id)
+        const alreadyOnline = get().friendsOnline.find(friend => friend.id === dataFriend.id)
+
+        if(!alreadyFriends) {
+            set((state) => ({
+                userData: {
+                    ...state.userData,
+                    friends: [...state.userData.friends, dataFriend]
+                }
+            }))
+            toast.success(`${dataFriend.name}, ¡acaba de aceptar tu solicitud!`)
+            if(!alreadyOnline) {
+                set((state) => ({
+                    friendsOnline: [...state.friendsOnline, dataFriend]
+                }))
+            }
+        }
+    },
+
+    updateFriendRemovedNotification: (friendId) => {
+        set((state) => ({
+            userData: {
+                ...state.userData,
+                friends: state.userData.friends.filter(friend => friend.id !== friendId)
+            },
+            friendsOnline: state.friendsOnline.filter(friend => friend.id !== friendId)
+        }))
     }
+    
 }))

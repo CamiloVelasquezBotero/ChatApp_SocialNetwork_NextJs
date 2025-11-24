@@ -29,11 +29,13 @@ export default function FriendInfo({friend}:UserInfoProps) {
   }
 
   return (
-    <li className='flex gap-5 items-center shadow-xl p-2 rounded-2xl w-83'>
-      <img src="/pruebaUser.jpg" alt="friendPhoto" className='w-10 h-10'/>
-      <div className=''>
-        <p className='font-black'>{friend.name}</p>
-        <p className='text-slate-600 font-bold'>{friend.email}</p>
+    <li className='flex justify-between shadow-xl p-2 rounded-2xl w-90 h-16'>
+      <div className='flex items-center gap-5'>
+        <img src="/pruebaUser.jpg" alt="friendPhoto" className='w-10 h-10'/>
+        <div className=''>
+          <p className='font-black'>{friend.name}</p>
+          <p className='text-slate-600 font-bold'>{friend.email}</p>
+        </div>
       </div>
       <div className='flex gap-5'>
         <button className='shadow-2xl' ><ChatBubbleLeftRightIcon className='w-8 h-8 text-white bg-blue-500 rounded-xl p-1 hover:bg-blue-600 transition cursor-pointer hover:scale-105' /></button>

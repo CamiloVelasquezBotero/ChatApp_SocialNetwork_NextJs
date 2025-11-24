@@ -2,13 +2,14 @@
 import { useStore } from '@/src/store'
 import DropDownMenu from './DropDownMenu'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import PopOverNotification from './ui/PopOverNotification'
 import socket from '@/src/lib/socket'
 import { FriendOnline, FriendsOnlineId } from '@/src/types'
 
 export default function Header() {
+  // State
   const userData = useStore((state) => state.userData)
   const token = useStore((state) => state.token)
   const setToken = useStore((state) => state.setToken)
@@ -16,8 +17,11 @@ export default function Header() {
   const userId = useStore((state) => state.userData.id)
   const friends = useStore((state) => state.userData.friends)
   const updateOnlineFriends = useStore((state) => state.updateOnlineFriends)
+  const updateFriendOnline = useStore((state) => state.updateFriendOnline)
   const updateUserDisconnected = useStore((state) => state.updateUserDisconnected)
   const updateUserConnected = useStore((state) => state.updateUserConnected)
+  const updateFriendRemovedNotification = useStore((state) => state.updateFriendRemovedNotification)
+
   const router = useRouter()
   const friendsId = friends.map(friend => friend.id)
   
@@ -37,11 +41,17 @@ export default function Header() {
       socket.on('update-notifications', () => {
         getUserData()
       })
+      socket.on('request-accepted-notification', async (dataFriend:FriendOnline) => {
+        updateFriendOnline(dataFriend)
+      })
       socket.on('friends-online', (friendsOnline:FriendsOnlineId) => {
         updateOnlineFriends(friendsOnline)
       })
       socket.on('friend-connected', (friendId:FriendOnline['id']) => {
         updateUserConnected(friendId)
+      })
+      socket.on('friend-removed-notification', (friendId:FriendOnline['id']) => {
+        updateFriendRemovedNotification(friendId)
       })
       socket.on('friend-disconnected', (userDisconnected:FriendOnline['id']) => {
         updateUserDisconnected(userDisconnected)
